@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body {
+            width: 350px;
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .header h1 {
+            margin: 0;
+            color: #007bff;
+            font-size: 24px;
+        }
+        
+        .header p {
+            margin: 5px 0 0 0;
+            color: #666;
+            font-style: italic;
+        }
+        
+        .voice-section {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .voice-button {
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 15px 30px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .voice-button:hover {
+            background: #0056b3;
+            transform: scale(1.05);
+        }
+        
+        .voice-button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .status {
+            margin: 15px 0;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 14px;
+        }
+        
+        .status.listening {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status.processing {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .plan-section {
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .plan-step {
+            padding: 10px;
+            margin: 5px 0;
+            border-left: 3px solid #007bff;
+            background: #f8f9fa;
+            border-radius: 0 5px 5px 0;
+        }
+        
+        .plan-step.confirmation {
+            border-left-color: #ffc107;
+            background: #fff3cd;
+        }
+        
+        .plan-actions {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .plan-actions button {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .execute-btn {
+            background: #28a745;
+            color: white;
+        }
+        
+        .cancel-btn {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .backend-status {
+            margin-top: 20px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .backend-status.connected {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .backend-status.disconnected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Navis</h1>
+        <p>Don't just browse. Arrive.</p>
+    </div>
+    
+    <div class="voice-section">
+        <button id="voiceButton" class="voice-button">
+            🎤 Tell me your goal
+        </button>
+        
+        <div id="status" class="status" style="display: none;"></div>
+    </div>
+    
+    <div id="planSection" class="plan-section">
+        <h3>Navigation Plan:</h3>
+        <div id="planSteps"></div>
+        <div class="plan-actions">
+            <button id="executeBtn" class="execute-btn">Execute Plan</button>
+            <button id="cancelBtn" class="cancel-btn">Cancel</button>
+        </div>
+    </div>
+    
+    <div id="backendStatus" class="backend-status">
+        Checking backend connection...
+    </div>
+    
+    <script src="popup.js"></script>
+</body>
+</html>
