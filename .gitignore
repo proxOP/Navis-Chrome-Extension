@@ -5,8 +5,6 @@
 *.swo
 *~
 
-# Kiro Settings
-.kiro/
 
 # Python Virtual Environment
 navis-env/
