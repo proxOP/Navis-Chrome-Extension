@@ -45,16 +45,19 @@ Navis is built as a **Chrome extension** to operate within real browser security
 
 ### Core Technical Components  
 - **Voice Input:** Speech-to-text for natural goal expression  
-- **Intent Understanding:** LLM interprets user goals at a semantic level  
+- **Intent Understanding:** LLM interprets user goals and extracts semantic requirements
 - **Page Inspection:** DOM and Accessibility Tree analysis  
-- **Interactive Element Detection:**  
-  Inspired by WebNav, Navis identifies actionable elements using:
+- **Semantic Element Detection:**  
+  Advanced semantic analysis that scores elements based on:
+  - Intent-aware text and context matching
   - Semantic roles (links, buttons, inputs)
-  - ARIA labels
-  - Headings and structural landmarks
-  - Visibility and interactivity heuristics
-- **Dynamic Navigation Planning:**  
-  Task-specific, ephemeral agent graphs are created per user goal to plan and execute navigation steps.
+  - ARIA labels and accessibility information
+  - Visual prominence and positioning
+  - Learned user preferences
+- **Reinforcement Learning:**  
+  Continuous improvement through human feedback and success/failure patterns
+- **Adaptive Action Selection:**  
+  Smart element selection combining semantic understanding with learned preferences
 - **Guided Execution:**  
   Scroll, highlight, and navigate with explicit user confirmation for actions.
 
