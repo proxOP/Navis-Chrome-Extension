@@ -135,9 +135,13 @@ Navis is a voice-driven AI navigation agent implemented as a Chrome extension th
 
 ### External Services
 - Speech-to-text service integration (Web Speech API primary)
-- LLM API for intent parsing and plan generation (OpenAI/Anthropic)
-- Optional vision API for fallback scenarios (GPT-4V/Gemini Vision)
-- Analytics for usage patterns (privacy-compliant, session-only)
+- LLM API for intent parsing (AWS Bedrock with Claude/Llama models primary, OpenAI/Anthropic fallback)
+- Optional vision API for fallback scenarios (AWS Rekognition + Bedrock Vision, GPT-4V/Gemini Vision fallback)
+- Session state management (AWS DynamoDB)
+- Experience storage for RL training (AWS S3)
+- Model training and deployment (AWS SageMaker)
+- Monitoring and logging (AWS CloudWatch)
+- Serverless backend option (AWS Lambda + API Gateway)
 
 ## Compliance & Standards
 
@@ -184,11 +188,21 @@ The system uses a **Semantic Element Detection + Reinforcement Learning** approa
 - **Reliable**: Semantic understanding + learned preferences
 
 ### LLM Integration Strategy:
-1. **Intent Parsing**: Single call to understand user goal and extract semantic requirements
+1. **Intent Parsing**: Single call to AWS Bedrock (Claude 3 Haiku for cost efficiency) to understand user goal and extract semantic requirements
 2. **Semantic Analysis**: Local processing to score elements based on intent relevance
-3. **RL Decision**: Apply learned preferences to select best action candidate
-4. **Feedback Learning**: Update RL model based on action success and human feedback
-5. **Vision Fallback**: Only when semantic approach fails (< 5% cases)
+3. **RL Decision**: Apply learned preferences to select best action candidate (models trained on AWS SageMaker)
+4. **Feedback Learning**: Update RL model based on action success and human feedback (experiences stored in AWS S3)
+5. **Vision Fallback**: AWS Rekognition + Bedrock Vision when semantic approach fails (< 5% cases)
+6. **Session Management**: AWS DynamoDB for fast session state storage with automatic TTL cleanup
+7. **Monitoring**: AWS CloudWatch for performance metrics and system health
+
+### AWS Integration Benefits:
+- **Cost Efficiency**: 10-120x cheaper than OpenAI (Bedrock Claude 3 Haiku)
+- **Scalability**: Auto-scaling with Lambda and DynamoDB
+- **Reliability**: Multi-region deployment with AWS infrastructure
+- **Security**: IAM roles, VPC isolation, encryption at rest/transit
+- **Compliance**: AWS compliance certifications (SOC 2, HIPAA, etc.)
+- **Monitoring**: Built-in CloudWatch metrics and logging
 
 ## Future Considerations
 
