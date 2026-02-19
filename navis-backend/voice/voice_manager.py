@@ -4,15 +4,28 @@ Voice Manager - Handles speech-to-text conversion
 
 import base64
 import io
-import speech_recognition as sr
 from typing import Optional
 from loguru import logger
 
+# Try to import speech recognition, but make it optional
+try:
+    import speech_recognition as sr
+    SPEECH_RECOGNITION_AVAILABLE = True
+except ImportError:
+    SPEECH_RECOGNITION_AVAILABLE = False
+    logger.warning("speech_recognition not available - voice features disabled")
+
 class VoiceManager:
     def __init__(self):
-        self.recognizer = sr.Recognizer()
-        self.microphone = None
-        self._ready = True
+        if SPEECH_RECOGNITION_AVAILABLE:
+            self.recognizer = sr.Recognizer()
+            self.microphone = None
+            self._ready = True
+        else:
+            self.recognizer = None
+            self.microphone = None
+            self._ready = False
+            logger.warning("VoiceManager initialized without speech recognition support")
         
     def is_ready(self) -> bool:
         """Check if voice manager is ready"""
@@ -28,6 +41,9 @@ class VoiceManager:
         Returns:
             Transcribed text
         """
+        if not SPEECH_RECOGNITION_AVAILABLE:
+            raise ValueError("Speech recognition not available - install speech_recognition and pyaudio")
+            
         try:
             # Decode base64 audio data
             audio_bytes = base64.b64decode(audio_data)
@@ -71,6 +87,9 @@ class VoiceManager:
         Returns:
             Transcribed text
         """
+        if not SPEECH_RECOGNITION_AVAILABLE:
+            raise ValueError("Speech recognition not available - install speech_recognition and pyaudio")
+            
         try:
             if not self.microphone:
                 self.microphone = sr.Microphone()
@@ -94,6 +113,9 @@ class VoiceManager:
     
     def test_microphone(self) -> bool:
         """Test if microphone is working"""
+        if not SPEECH_RECOGNITION_AVAILABLE:
+            return False
+            
         try:
             if not self.microphone:
                 self.microphone = sr.Microphone()

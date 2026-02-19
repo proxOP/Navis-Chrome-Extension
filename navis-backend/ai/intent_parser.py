@@ -5,13 +5,34 @@ Intent Parser - Uses LLM to understand user goals
 import json
 import os
 from typing import Dict, Any
-from openai import OpenAI
 from loguru import logger
 
+# Try to import AWS Bedrock client, fallback to OpenAI if not available
+try:
+    from aws.bedrock_client import BedrockClient
+    BEDROCK_AVAILABLE = True
+except ImportError:
+    BEDROCK_AVAILABLE = False
+    from openai import OpenAI
+
 class IntentParser:
-    def __init__(self):
-        self.client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-        self._ready = bool(os.getenv("OPENAI_API_KEY"))
+    def __init__(self, use_bedrock: bool = True):
+        """
+        Initialize intent parser with AWS Bedrock (preferred) or OpenAI fallback
+        
+        Args:
+            use_bedrock: Use AWS Bedrock if available (10-120x cost savings)
+        """
+        self.use_bedrock = use_bedrock and BEDROCK_AVAILABLE
+        
+        if self.use_bedrock:
+            self.client = BedrockClient()
+            self._ready = True
+            logger.info("Intent parser initialized with AWS Bedrock")
+        else:
+            self.client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+            self._ready = bool(os.getenv("OPENAI_API_KEY"))
+            logger.info("Intent parser initialized with OpenAI")
         
     def is_ready(self) -> bool:
         """Check if intent parser is ready"""
@@ -56,18 +77,27 @@ class IntentParser:
             }}
             """
             
-            response = self.client.chat.completions.create(
-                model="gpt-3.5-turbo",
-                messages=[
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": user_prompt}
-                ],
-                temperature=0.1,
-                max_tokens=200
-            )
+            if self.use_bedrock:
+                # Use AWS Bedrock (10-120x cost savings)
+                response = await self.client.generate_text(
+                    prompt=f"{system_prompt}\n\n{user_prompt}",
+                    max_tokens=200,
+                    temperature=0.1
+                )
+                intent_text = response.strip()
+            else:
+                # Fallback to OpenAI
+                response = self.client.chat.completions.create(
+                    model="gpt-3.5-turbo",
+                    messages=[
+                        {"role": "system", "content": system_prompt},
+                        {"role": "user", "content": user_prompt}
+                    ],
+                    temperature=0.1,
+                    max_tokens=200
+                )
+                intent_text = response.choices[0].message.content.strip()
             
-            # Parse the JSON response
-            intent_text = response.choices[0].message.content.strip()
             logger.info(f"Raw LLM response: {intent_text}")
             
             # Clean up the response (remove markdown formatting if present)
